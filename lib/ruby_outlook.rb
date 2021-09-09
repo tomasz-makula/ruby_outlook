@@ -505,6 +505,26 @@ module RubyOutlook
     end
 
     # token (string): access token
+    # calendar_id (string): The Id of the calendar to retrieve
+    # window_start (DateTime): The earliest time to include in the view
+    # window_end (DateTime): The latest time to include in the view
+    # fields (array): An array of field names to include in results
+    # user (string): The user to make the call for. If nil, use the 'Me' constant.
+    def get_events_by_calendar(token, calendar_id, window_start, window_end, fields = nil, user = nil)
+      request_url = user_context(user) << '/Calendars/' << calendar_id << '/Events'
+      request_params = {
+        'startDateTime' => window_start.strftime('%FT%T%:z'),
+        'endDateTime' => window_end.strftime('%FT%T%:z')
+      }
+
+      request_params['$select'] = fields.join(',') if fields
+
+      get_event_response = make_api_call 'GET', request_url, token, request_params
+
+      parse_response(get_event_response)
+    end
+
+    # token (string): access token
     # window_start (DateTime): The earliest time (UTC) to include in the view
     # window_end (DateTime): The latest time (UTC) to include in the view
     # id (string): The Id of the calendar to view
