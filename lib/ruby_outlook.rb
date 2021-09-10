@@ -462,6 +462,20 @@ module RubyOutlook
     end
 
     # token (string): access token
+    # calendar_id (string): The Id of the calendar to delete.
+    # user (string): The user to make the call for. If nil, use the 'Me' constant.
+    def delete_calendar(token, calendar_id, user = nil)
+      # DELETE /me/calendars/{id}
+      # DELETE /users/{id | userPrincipalName}/calendars/{id}
+
+      request_url = user_context(user) << '/calendars/' << calendar_id
+
+      delete_response = make_api_call 'DELETE', request_url, token
+
+      parse_response(delete_response)
+    end
+
+    # token (string): access token
     # view_size (int): maximum number of results
     # page (int): What page to fetch (multiple of view size)
     # fields (array): An array of field names to include in results
@@ -609,6 +623,8 @@ module RubyOutlook
 
     def parse_response(response)
       # TODO: consider `return nil if response.nil? || response.empty?` for delete_* calls
+      return nil if response.nil? || response.empty?
+
       parsed = JSON.parse(response)
       parsed = transform_keys(parsed, (@return_format == :camel_case ? :downcase : :upcase)) if @return_format != @resource_format
       parsed
