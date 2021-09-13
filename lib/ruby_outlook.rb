@@ -519,6 +519,16 @@ module RubyOutlook
     end
 
     # token (string): access token
+    # user (string): The user to make the call for. If nil, use the 'Me' constant.
+    def get_settings(token, user = nil)
+      request_url = user_context(user) << '/mailboxSettings'
+
+      get_event_response = make_api_call 'GET', request_url, token
+
+      parse_response(get_event_response)
+    end
+
+    # token (string): access token
     # calendar_id (string): The Id of the calendar to retrieve
     # window_start (DateTime): The earliest time to include in the view
     # window_end (DateTime): The latest time to include in the view
